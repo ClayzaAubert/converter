@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage - Text 2 Binner</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+    <h1>Text 2 Binner!</h1>
+    <p>Alat penggubah text ke binner dan sebaliknya.</p>
+    <a href="/text2bin.html" id="textToBinnerBtn" class="btn">Text to Binner</a>
+    <a href="/bin2text.html" id="binnerToTextBtn" class="btn">Binner to Text</a>
+
+    <footer>
+        <p>&copy; 2024 Text 2 Binner. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.getElementById('textToBinnerBtn').addEventListener('click', function () {
+            window.location.href = 'text2binner.html';
+        });
+
+        document.getElementById('binnerToTextBtn').addEventListener('click', function () {
+            window.location.href = 'binner2text.html';
+        });
+    </script>
+</body>
+
+</html>
