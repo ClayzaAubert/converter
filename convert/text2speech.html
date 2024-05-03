@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Speech</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom right, #4a4e69, #2b2d42, #1b1d2b) no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 400px;
+        }
+
+        textarea {
+            width: 80%;
+            height: 100px;
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 16px;
+            resize: none;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            color: #ccc;
+            padding: 10px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Text to Speech</h2>
+        <textarea id="textInput" placeholder="Masukkan teks di sini..."></textarea>
+        <button onclick="startTextToSpeech()">Dengarkan</button>
+    </div>
+    <footer>
+        <p>&copy; 2024 Converter. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function startTextToSpeech() {
+            const textInput = document.getElementById('textInput').value;
+            const maxLength = 200;
+            
+            if (!textToSpeechSupported()) {
+                alert('Browser tidak mendukung text-to-speech.');
+                return;
+            }
+
+            if (textInput.length === 0) {
+                alert('Masukkan teks terlebih dahulu.');
+                return;
+            }
+
+            const parts = splitTextIntoParts(textInput, maxLength);
+            speakPartsSequentially(parts);
+        }
+
+        function textToSpeechSupported() {
+            return 'speechSynthesis' in window;
+        }
+
+        function splitTextIntoParts(text, maxLength) {
+            const parts = [];
+            let start = 0;
+
+            while (start < text.length) {
+                const part = text.substr(start, maxLength);
+                parts.push(part);
+                start += maxLength;
+            }
+
+            return parts;
+        }
+
+        function speakPartsSequentially(parts) {
+            const synth = window.speechSynthesis;
+            let currentIndex = 0;
+
+            function speakNextPart() {
+                if (currentIndex < parts.length) {
+                    const utterance = new SpeechSynthesisUtterance(parts[currentIndex]);
+                    synth.speak(utterance);
+                    currentIndex++;
+                    utterance.onend = () => {
+                        setTimeout(speakNextPart, 500);
+                    };
+                }
+            }
+
+            speakNextPart();
+        }
+    </script>
+</body>
+</html>

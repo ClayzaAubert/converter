@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Uploader with OCR</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom right, #4a4e69, #2b2d42, #1b1d2b) no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 400px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #resultContainer {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+            overflow: auto;
+            max-height: 200px;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            color: #ccc;
+            padding: 10px 0;
+        }
+
+        /* Animasi loading */
+        .loader {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Optical Character Recognition</h1>
+        <p>Silakan masukkan gambar yang berisi teks untuk diekstraksi teksnya</p>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="fileInput" accept="image/*" required>
+            <button type="submit">Upload</button>
+        </form>
+        <div id="resultContainer">
+            <p>Uploaded Image URL:</p>
+            <p id="imageUrl"></p>
+            <p>OCR Result:</p>
+            <div id="ocrResult"></div>
+        </div>
+        <div id="loading" class="loader" style="display: none;"></div>
+
+        <footer>
+            <p>&copy; 2024 Converter. All rights reserved.</p>
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const uploadForm = document.getElementById('uploadForm');
+        const loadingIndicator = document.getElementById('loading');
+
+        uploadForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            loadingIndicator.style.display = 'block';
+
+            try {
+                const imgBbResponse = await axios.post('https://api.imgbb.com/1/upload?key=4a1777fd05e55b4c9bc79147f3abfdd2', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                const imageUrl = imgBbResponse.data.data.url;
+
+                const imageUrlElement = document.getElementById('imageUrl');
+                imageUrlElement.textContent = imageUrl;
+
+                const ocrResponse = await axios.get(`https://itzpire.site/tools/ocr?url=${encodeURIComponent(imageUrl)}`);
+
+                const ocrResultElement = document.getElementById('ocrResult');
+                const ocrText = ocrResponse.data.data.ParsedText;
+                ocrResultElement.textContent = ocrText;
+
+                const resultContainer = document.getElementById('resultContainer');
+                resultContainer.style.display = 'block';
+            } catch (error) {
+                alert('An error occurred while processing the image.');
+                console.error(error);
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

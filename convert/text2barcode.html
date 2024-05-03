@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Barcode Converter</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom right, #4a4e69, #2b2d42, #1b1d2b) no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 400px;
+        }
+
+        #barcodeDisplay {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        textarea {
+            width: 80%;
+            height: 100px;
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 16px;
+            resize: none;
+        }
+
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            background-color: #007bff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        @media screen and (max-width: 480px) {
+            button {
+                display: block;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            color: #ccc;
+            padding: 10px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text to Barcode</h1>
+        <textarea id="inputText" placeholder="Masukkan teks di sini..."></textarea>
+        <button onclick="generateBarcode()">Generate Barcode</button>
+        <svg id="barcodeDisplay"></svg>
+        <button onclick="openInNewTab()">Open in New Tab</button>
+        <button onclick="downloadBarcode()">Download Image</button>
+    </div>
+    <footer>
+        <p>&copy; 2024 Converter. All rights reserved.</p>
+    </footer>
+    <script>
+        function generateBarcode() {
+            var inputText = document.getElementById('inputText').value;
+            var barcodeOptions = {
+                format: "CODE128",
+                displayValue: false,
+                lineColor: "#000",
+                width: 2,
+                height: 50
+            };
+
+            document.getElementById('barcodeDisplay').innerHTML = '';
+
+            JsBarcode("#barcodeDisplay", inputText, barcodeOptions);
+        }
+
+        function openInNewTab() {
+            var svgString = new XMLSerializer().serializeToString(document.querySelector('svg'));
+            var blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+            var url = URL.createObjectURL(blob);
+            window.open(url, "_blank");
+        }
+
+        function downloadBarcode() {
+            var svgString = new XMLSerializer().serializeToString(document.querySelector('svg'));
+            var blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = "barcode.svg";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>
